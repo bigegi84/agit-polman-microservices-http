@@ -4,13 +4,6 @@ using Newtonsoft.Json.Linq;
 
 namespace dotnet_api_test.Controllers;
 
-public class Jurusan
-{
-    public int JurusanId { get; set; }
-    public string? Nama { get; set; }
-    public string? Fakultas { get; set; }
-}
-
 [ApiController]
 [Route("[controller]")]
 public class MahasiswaController : ControllerBase
@@ -23,7 +16,7 @@ public class MahasiswaController : ControllerBase
     }
 
     //TODO [HttpGet("WithSemester")]
-    
+
 
     [HttpGet("WithJurusan")]
     public async Task<object?> GetWithJurusan()
@@ -145,4 +138,12 @@ public class MahasiswaController : ControllerBase
             .ToList();
         return data;
     }
+}
+
+
+public class Jurusan
+{
+    public int JurusanId { get; set; }
+    public string? Nama { get; set; }
+    public string? Fakultas { get; set; }
 }

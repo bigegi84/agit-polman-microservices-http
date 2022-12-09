@@ -2,17 +2,17 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 
-public class MahasiswaContext : DbContext
+public class SemesterContext : DbContext
 {
-    public DbSet<Mahasiswa> Mahasiswas { get; set; }
+    public DbSet<Semester> Semesters { get; set; }
 
     public string DbPath { get; }
 
-    public MahasiswaContext()
+    public SemesterContext()
     {
         var folder = Environment.SpecialFolder.LocalApplicationData;
         var path = Environment.GetFolderPath(folder);
-        DbPath = System.IO.Path.Join(path, "mahasiswa.db");
+        DbPath = System.IO.Path.Join(path, "semester.db");
     }
 
     // The following configures EF to create a Sqlite database file in the
@@ -21,11 +21,8 @@ public class MahasiswaContext : DbContext
         => options.UseSqlite($"Data Source={DbPath}");
 }
 
-public class Mahasiswa
+public class Semester
 {
-    public int MahasiswaId { get; set; }
-    public string NIM { get; set; }
-    public string Nama { get; set; }
-    public int JurusanId { get; set; }
     public int SemesterId { get; set; }
+    public string Nama { get; set; }
 }

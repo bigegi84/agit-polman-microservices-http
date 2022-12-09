@@ -17,6 +17,45 @@ public class MahasiswaController : ControllerBase
 
     //TODO [HttpGet("WithSemester")]
 
+    [HttpGet("WithSemester")]
+    public async Task<object?> GetWithSemester()
+    {
+        try
+        {
+            HttpClient client = new HttpClient();
+            using HttpResponseMessage response = await client.GetAsync("http://localhost:5266/Semester");
+            response.EnsureSuccessStatusCode();
+            string responseBody = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(responseBody);
+            using var db = new MahasiswaContext();
+            Console.WriteLine($"Database path: {db.DbPath}.");
+
+            // Read
+            Console.WriteLine("Querying for a data");
+            var data = db.Mahasiswas
+                .OrderBy(b => b.MahasiswaId)
+                .ToList();
+            var jurusan = JsonConvert.DeserializeObject<IEnumerable<Semester>>(responseBody);
+            var result = data.Select(it => new
+            {
+                MahasiswaId = it.MahasiswaId,
+                NIM = it.NIM,
+                Nama = it.Nama,
+                JurusanId = it.JurusanId,
+                SemesterId = it.SemesterId,
+                Semester = jurusan?.ToList().Find(j => j.SemesterId == it.SemesterId)
+            }).ToList();
+            return result;
+            // return data;
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine("\nException Caught!");
+            Console.WriteLine("Message :{0} ", e.Message);
+            return null;
+        }
+    }
+
 
     [HttpGet("WithJurusan")]
     public async Task<object?> GetWithJurusan()
@@ -37,7 +76,14 @@ public class MahasiswaController : ControllerBase
                 .OrderBy(b => b.MahasiswaId)
                 .ToList();
             var jurusan = JsonConvert.DeserializeObject<IEnumerable<Jurusan>>(responseBody);
-            var result = data.Select(it => new { MahasiswaId = it.MahasiswaId, NIM = it.NIM, Nama = it.Nama, JurusanId = it.JurusanId, Jurusan = jurusan?.ToList().Find(j => j.JurusanId == it.JurusanId) }).ToList();
+            var result = data.Select(it => new
+            {
+                MahasiswaId = it.MahasiswaId,
+                NIM = it.NIM,
+                Nama = it.Nama,
+                JurusanId = it.JurusanId,
+                Jurusan = jurusan?.ToList().Find(j => j.JurusanId == it.JurusanId)
+            }).ToList();
             return result;
             // return data;
         }
@@ -107,6 +153,7 @@ public class MahasiswaController : ControllerBase
         data.NIM = body.NIM;
         data.Nama = body.Nama;
         data.JurusanId = body.JurusanId;
+        data.SemesterId = body.SemesterId;
         db.SaveChanges();
         // Read
         Console.WriteLine("Querying for a data");
@@ -146,4 +193,10 @@ public class Jurusan
     public int JurusanId { get; set; }
     public string? Nama { get; set; }
     public string? Fakultas { get; set; }
+}
+
+public class Semester
+{
+    public int SemesterId { get; set; }
+    public string Nama { get; set; }
 }

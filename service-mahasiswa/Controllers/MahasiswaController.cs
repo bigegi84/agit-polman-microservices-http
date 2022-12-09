@@ -23,6 +23,7 @@ public class MahasiswaController : ControllerBase
     }
 
     //TODO [HttpGet("WithSemester")]
+    
 
     [HttpGet("WithJurusan")]
     public async Task<object?> GetWithJurusan()
